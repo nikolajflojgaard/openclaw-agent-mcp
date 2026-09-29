@@ -23,6 +23,11 @@ const list = await store.listRequests();
 assert.equal(list.length, 1);
 assert.equal(list[0].id, request.id);
 
+const queueStatus = await store.getQueueStatus();
+assert.equal(queueStatus.counts.totalActive, 1);
+assert.equal(queueStatus.counts.new, 1);
+assert.match(queueStatus.safetyBoundary, /Jason\/OpenClaw/);
+
 const read = await store.getRequest(request.id);
 assert.equal(read.title, "Smoke test request");
 

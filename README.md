@@ -34,6 +34,7 @@ Existing tools and workflows
 - `read_jason_request` reads one request by id.
 - `update_jason_request` records status/reply. This is for Jason or a trusted local operator.
 - `archive_jason_request` moves a request out of the active inbox.
+- `get_jason_bridge_status` reports queue counts, recent request summaries, and the safety boundary.
 
 ## Runner
 
@@ -70,6 +71,12 @@ Useful dry runs:
 jason-mcp-runner --dry-run --limit 5
 jason-mcp-runner --once --mock-reply "Test reply"
 jason-mcp-runner --once --quiet-empty
+```
+
+Migration doctor:
+
+```bash
+npm run doctor
 ```
 
 Cron-friendly command:
@@ -116,6 +123,19 @@ mcporter call --config ./config/mcporter.example.json jason.submit_jason_request
     "sourceContext": "Grok/Tesla"
   }'
 ```
+
+Status check:
+
+```bash
+mcporter call jason.get_jason_bridge_status --args '{}'
+```
+
+## Migration docs
+
+- [Migration runbook](docs/migration-runbook.md)
+- [Client config notes](docs/client-configs.md)
+- [Security model](docs/security-model.md)
+- [Failure modes](docs/failure-modes.md)
 
 ## Safety rules
 

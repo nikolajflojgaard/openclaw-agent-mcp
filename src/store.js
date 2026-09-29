@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -76,6 +76,54 @@ export async function listRequests(options = {}, dir = queueDir()) {
   }
   requests.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   return requests.slice(0, options.limit || 20);
+}
+
+export async function getQueueStatus(dir = queueDir()) {
+  await ensureStore(dir);
+  const activeFiles = await readdir(path.join(dir, "requests"));
+  const archiveFiles = await readdir(path.join(dir, "archive"));
+  const counts = {
+    new: 0,
+    accepted: 0,
+    processing: 0,
+    blocked: 0,
+    done: 0,
+    rejected: 0,
+    archived: archiveFiles.filter((file) => file.endsWith(".json")).length,
+    totalActive: 0
+  };
+  let newestUpdatedAt = null;
+  let oldestNewAt = null;
+  const samples = [];
+
+  for (const file of activeFiles) {
+    if (!file.endsWith(".json")) continue;
+    const request = await readJson(path.join(dir, "requests", file));
+    counts.totalActive += 1;
+    if (Object.hasOwn(counts, request.status)) counts[request.status] += 1;
+    if (!newestUpdatedAt || request.updatedAt > newestUpdatedAt) newestUpdatedAt = request.updatedAt;
+    if (request.status === "new" && (!oldestNewAt || request.createdAt < oldestNewAt)) {
+      oldestNewAt = request.createdAt;
+    }
+    if (samples.length < 10) samples.push(summarizeRequest(request));
+  }
+
+  const dirStats = await stat(dir);
+  samples.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  return {
+    status: counts.blocked > 0 ? "attention" : "ok",
+    queueDir: dir,
+    counts,
+    newestUpdatedAt,
+    oldestNewAt,
+    queueDirMtime: dirStats.mtime.toISOString(),
+    runnerExpectation:
+      "A separate guarded runner should drain new requests and write replies back. The MCP server itself never executes shell, HA, GitHub, Drive, or website actions.",
+    safetyBoundary:
+      "External clients submit requests. Jason/OpenClaw classifies and executes through existing approval gates.",
+    recent: samples
+  };
 }
 
 export async function getRequest(id, dir = queueDir()) {

@@ -10,6 +10,7 @@ import {
   archiveRequest,
   createRequest,
   ensureStore,
+  getQueueStatus,
   getRequest,
   listRequests,
   queueDir,
@@ -136,6 +137,15 @@ export async function createServer() {
         }
       },
       {
+        name: "get_jason_bridge_status",
+        description:
+          "Read migration health for the Jason MCP bridge: queue counts, recent request summaries, queue path, and the safety boundary. This is status only; it does not execute actions.",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
         name: "archive_jason_request",
         description: "Archive a completed or rejected Jason MCP inbox request.",
         inputSchema: {
@@ -166,6 +176,9 @@ export async function createServer() {
     if (name === "update_jason_request") {
       return toolJson(await updateRequest(args));
     }
+    if (name === "get_jason_bridge_status") {
+      return toolJson(await getQueueStatus());
+    }
     if (name === "archive_jason_request") {
       return toolJson(await archiveRequest(args.id));
     }
@@ -179,24 +192,41 @@ export async function createServer() {
         name: "Jason MCP inbox",
         description: `File-backed Jason request inbox at ${queueDir()}`,
         mimeType: "application/json"
+      },
+      {
+        uri: "jason://status",
+        name: "Jason MCP bridge status",
+        description: "Queue health, counts, and migration safety boundary for Jason MCP.",
+        mimeType: "application/json"
       }
     ]
   }));
 
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-    if (request.params.uri !== "jason://inbox") {
-      throw new Error(`Unknown resource: ${request.params.uri}`);
+    if (request.params.uri === "jason://status") {
+      return {
+        contents: [
+          {
+            uri: "jason://status",
+            mimeType: "application/json",
+            text: JSON.stringify(await getQueueStatus(), null, 2)
+          }
+        ]
+      };
     }
-    const requests = await listRequests({ limit: 50 });
-    return {
-      contents: [
-        {
-          uri: "jason://inbox",
-          mimeType: "application/json",
-          text: JSON.stringify({ queueDir: queueDir(), requests }, null, 2)
-        }
-      ]
-    };
+    if (request.params.uri === "jason://inbox") {
+      const requests = await listRequests({ limit: 50 });
+      return {
+        contents: [
+          {
+            uri: "jason://inbox",
+            mimeType: "application/json",
+            text: JSON.stringify({ queueDir: queueDir(), requests }, null, 2)
+          }
+        ]
+      };
+    }
+    throw new Error(`Unknown resource: ${request.params.uri}`);
   });
 
   return server;
