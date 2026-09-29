@@ -1,0 +1,19 @@
+{
+  "name": "@nikolajflojgaard/jason-mcp",
+  "version": "0.1.0",
+  "description": "Local MCP request bridge for Jason/OpenClaw.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "jason-mcp": "./bin/jason-mcp.js"
+  },
+  "scripts": {
+    "start": "node ./bin/jason-mcp.js",
+    "smoke": "node ./test/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "jason": {
+      "command": "node",
+      "args": [
+        "/Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js"
+      ],
+      "env": {
+        "JASON_MCP_QUEUE_DIR": "/Users/nikolajflojgaard/.openclaw/workspace/state/jason-mcp"
+      }
+    }
+  }
+}
