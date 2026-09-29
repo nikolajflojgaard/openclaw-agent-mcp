@@ -58,10 +58,10 @@ async function checkNode() {
 async function checkPackage(repoRoot) {
   try {
     const pkg = JSON.parse(await readFile(path.join(repoRoot, "package.json"), "utf8"));
-    const missingBins = ["jason-mcp", "jason-mcp-runner", "jason-mcp-doctor"].filter(
+    const missingBins = ["jason-mcp", "jason-mcp-runner", "jason-mcp-doctor", "jason-mcp-handoff"].filter(
       (name) => !pkg.bin?.[name]
     );
-    const missingScripts = ["smoke", "doctor", "run-once"].filter((name) => !pkg.scripts?.[name]);
+    const missingScripts = ["smoke", "doctor", "run-once", "handoff"].filter((name) => !pkg.scripts?.[name]);
     const missing = [...missingBins.map((name) => `bin:${name}`), ...missingScripts.map((name) => `script:${name}`)];
     return {
       name: "package",

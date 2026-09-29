@@ -21,6 +21,7 @@ Run this from the repo root:
 npm install
 npm run smoke
 npm run doctor
+npm run handoff
 mcporter list jason --schema --json
 ```
 
@@ -28,6 +29,8 @@ The bridge is migration-ready when:
 
 - `npm run smoke` passes.
 - `npm run doctor` reports `Jason MCP doctor: OK`.
+- `npm run handoff` prints a complete migration packet with repo commit, stdio
+  config, expected tools, runner state, queue counts, and safety boundary.
 - `mcporter list jason --schema --json` shows the `jason` server and the expected tools.
 - OpenClaw cron `jason-mcp-inbox-runner` is enabled and healthy.
 - GitHub repo `nikolajflojgaard/jason-mcp` is private.
@@ -112,6 +115,13 @@ Run the doctor:
 
 ```bash
 npm run doctor
+```
+
+Generate the current handoff packet:
+
+```bash
+npm run handoff
+npm run handoff -- --json
 ```
 
 ## Rollback

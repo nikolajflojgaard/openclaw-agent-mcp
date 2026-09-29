@@ -86,4 +86,10 @@ assert.equal(
   "Nested payload reply."
 );
 
+const handoff = await import("../src/handoff.js");
+const packet = await handoff.buildHandoffPacket();
+assert.equal(packet.title, "Jason MCP migration handoff");
+assert.ok(packet.expectedTools.includes("get_jason_bridge_status"));
+assert.match(packet.boundary, /External clients ask/);
+
 console.log(`SMOKE_OK queue=${tempDir}`);

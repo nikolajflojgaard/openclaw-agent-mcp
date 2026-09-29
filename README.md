@@ -79,6 +79,13 @@ Migration doctor:
 npm run doctor
 ```
 
+Migration handoff packet:
+
+```bash
+npm run handoff
+npm run handoff -- --json
+```
+
 Cron-friendly command:
 
 ```bash
