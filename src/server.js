@@ -16,7 +16,7 @@ import {
   updateRequest
 } from "./store.js";
 
-const STATUSES = ["new", "accepted", "blocked", "done", "rejected"];
+const STATUSES = ["new", "accepted", "processing", "blocked", "done", "rejected"];
 const PRIORITIES = ["low", "normal", "high"];
 
 export async function createServer() {

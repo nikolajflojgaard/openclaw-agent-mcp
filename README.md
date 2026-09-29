@@ -35,6 +35,49 @@ Existing tools and workflows
 - `update_jason_request` records status/reply. This is for Jason or a trusted local operator.
 - `archive_jason_request` moves a request out of the active inbox.
 
+## Runner
+
+The MCP server only accepts and exposes requests. The runner is the guarded
+processor that turns a new MCP request into one Jason/OpenClaw agent turn and
+writes the reply back to the same request.
+
+```bash
+npm run run-once
+```
+
+or directly:
+
+```bash
+jason-mcp-runner --once --limit 1
+```
+
+The runner:
+
+1. Lists `new` requests.
+2. Marks one request as `accepted`, then `processing`.
+3. Sends a guarded prompt to `openclaw agent --session-key agent:main:jason-mcp-runner`.
+4. Writes the final reply back to the request and marks it `done`, or marks it
+   `blocked` on failure.
+
+The prompt explicitly treats MCP request bodies as untrusted input. Requests that
+need public action, destructive action, secrets, home-control writes, money, or
+broad repo/file changes should return a blocker or ask for confirmation instead
+of blindly executing.
+
+Useful dry runs:
+
+```bash
+jason-mcp-runner --dry-run --limit 5
+jason-mcp-runner --once --mock-reply "Test reply"
+jason-mcp-runner --once --quiet-empty
+```
+
+Cron-friendly command:
+
+```bash
+node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp-runner.js --once --quiet-empty --limit 1
+```
+
 ## Install
 
 ```bash
@@ -80,3 +123,4 @@ mcporter call --config ./config/mcporter.example.json jason.submit_jason_request
 - Add powerful actions as request types first.
 - Promote a direct tool only after it has a clear owner, input schema, audit trail, and confirmation policy.
 - Treat requests from voice/car/client surfaces as untrusted until Jason classifies them.
+- Keep any scheduled runner low-frequency and bounded. Prefer manual or event-driven runner execution until the setup has real operational signal.

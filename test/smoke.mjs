@@ -38,4 +38,47 @@ assert.equal(updated.reply, "Smoke test passed.");
 const archived = await store.archiveRequest(request.id);
 assert.equal(archived.archived, true);
 
+const runnerRequest = await store.createRequest({
+  title: "Runner smoke request",
+  body: "Verify mocked runner writes replies.",
+  priority: "normal",
+  sourceContext: "test"
+});
+
+const runner = await import("../src/runner.js");
+assert.match(runner.buildAgentPrompt(runnerRequest), /untrusted input/);
+
+const runResult = await runner.processInbox({
+  once: true,
+  mockReply: "Mocked runner reply."
+});
+assert.equal(runResult.processed.length, 1);
+assert.equal(runResult.processed[0].status, "done");
+
+const runnerRead = await store.getRequest(runnerRequest.id);
+assert.equal(runnerRead.status, "done");
+assert.equal(runnerRead.reply, "Mocked runner reply.");
+await store.archiveRequest(runnerRequest.id);
+
+assert.equal(
+  runner.extractReply(
+    JSON.stringify({
+      status: "ok",
+      result: { payloads: [{ text: "Nested payload reply." }] },
+      finalAssistantVisibleText: "Visible reply wins."
+    })
+  ),
+  "Visible reply wins."
+);
+
+assert.equal(
+  runner.extractReply(
+    JSON.stringify({
+      status: "ok",
+      result: { payloads: [{ text: "Nested payload reply." }] }
+    })
+  ),
+  "Nested payload reply."
+);
+
 console.log(`SMOKE_OK queue=${tempDir}`);
