@@ -1,6 +1,6 @@
 # Security Model
 
-Jason MCP exists to make migration possible without turning a new frontend into
+OpenClaw Agent MCP exists to make migration possible without turning a new frontend into
 an unrestricted local operator.
 
 ## Boundary

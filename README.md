@@ -1,4 +1,4 @@
-# Jason MCP
+# OpenClaw Agent MCP
 
 Local MCP bridge for talking to Jason/OpenClaw without Telegram.
 
@@ -18,7 +18,7 @@ and accidental writes. The useful first version is:
 client / Grok / car / IDE
         |
         v
-Jason MCP request inbox
+OpenClaw Agent MCP request inbox
         |
         v
 Jason/OpenClaw review + approval gates
@@ -49,14 +49,14 @@ npm run run-once
 or directly:
 
 ```bash
-jason-mcp-runner --once --limit 1
+openclaw-agent-mcp-runner --once --limit 1
 ```
 
 The runner:
 
 1. Lists `new` requests.
 2. Marks one request as `accepted`, then `processing`.
-3. Sends a guarded prompt to `openclaw agent --session-key agent:main:jason-mcp-runner`.
+3. Sends a guarded prompt to `openclaw agent --session-key agent:main:openclaw-agent-mcp-runner`.
 4. Writes the final reply back to the request and marks it `done`, or marks it
    `blocked` on failure.
 
@@ -68,9 +68,9 @@ of blindly executing.
 Useful dry runs:
 
 ```bash
-jason-mcp-runner --dry-run --limit 5
-jason-mcp-runner --once --mock-reply "Test reply"
-jason-mcp-runner --once --quiet-empty
+openclaw-agent-mcp-runner --dry-run --limit 5
+openclaw-agent-mcp-runner --once --mock-reply "Test reply"
+openclaw-agent-mcp-runner --once --quiet-empty
 ```
 
 Migration doctor:
@@ -89,7 +89,7 @@ npm run handoff -- --json
 Cron-friendly command:
 
 ```bash
-node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp-runner.js --once --quiet-empty --limit 1
+node /path/to/openclaw-agent-mcp/bin/openclaw-agent-mcp-runner.js --once --quiet-empty --limit 1
 ```
 
 ## Install
@@ -102,19 +102,19 @@ npm run smoke
 ## Run over stdio
 
 ```bash
-node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js
+node /path/to/openclaw-agent-mcp/bin/openclaw-agent-mcp.js
 ```
 
 By default, requests are stored under:
 
 ```text
-/Users/nikolajflojgaard/.openclaw/workspace/state/jason-mcp
+/path/to/openclaw-agent-mcp-state
 ```
 
 Override with:
 
 ```bash
-JASON_MCP_QUEUE_DIR=/path/to/queue node ./bin/jason-mcp.js
+OPENCLAW_AGENT_MCP_QUEUE_DIR=/path/to/queue node ./bin/openclaw-agent-mcp.js
 ```
 
 ## Connect from ChatGPT
@@ -127,7 +127,7 @@ Local prerequisites:
 
 ```bash
 brew install openai/tools/tunnel-client
-cd /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp
+cd /path/to/openclaw-agent-mcp
 npm install
 npm run doctor
 ```
@@ -152,7 +152,7 @@ tunnel-client init \
   --sample sample_mcp_stdio_local \
   --profile jason \
   --tunnel-id "<tunnel-id>" \
-  --mcp-command "node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js"
+  --mcp-command "node /path/to/openclaw-agent-mcp/bin/openclaw-agent-mcp.js"
 ```
 
 Validate and run it:

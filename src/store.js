@@ -8,11 +8,11 @@ const DEFAULT_QUEUE_DIR = path.join(
   ".openclaw",
   "workspace",
   "state",
-  "jason-mcp"
+  "openclaw-agent-mcp"
 );
 
 export function queueDir() {
-  return path.resolve(process.env.JASON_MCP_QUEUE_DIR || DEFAULT_QUEUE_DIR);
+  return path.resolve(process.env.OPENCLAW_AGENT_MCP_QUEUE_DIR || process.env.JASON_MCP_QUEUE_DIR || DEFAULT_QUEUE_DIR);
 }
 
 export async function ensureStore(dir = queueDir()) {
@@ -46,7 +46,7 @@ export async function createRequest(input, dir = queueDir()) {
     history: [
       {
         at: now,
-        actor: "jason-mcp",
+        actor: "openclaw-agent-mcp",
         event: "created",
         note: "Request submitted through MCP."
       }

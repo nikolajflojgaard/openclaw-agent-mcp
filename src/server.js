@@ -25,7 +25,7 @@ export async function createServer() {
 
   const server = new Server(
     {
-      name: "jason-mcp",
+      name: "openclaw-agent-mcp",
       version: "0.1.0"
     },
     {
@@ -78,7 +78,7 @@ export async function createServer() {
       },
       {
         name: "list_jason_requests",
-        description: "List recent Jason MCP inbox requests.",
+        description: "List recent OpenClaw Agent MCP inbox requests.",
         inputSchema: {
           type: "object",
           properties: {
@@ -97,7 +97,7 @@ export async function createServer() {
       },
       {
         name: "read_jason_request",
-        description: "Read one Jason MCP inbox request by id.",
+        description: "Read one OpenClaw Agent MCP inbox request by id.",
         inputSchema: {
           type: "object",
           required: ["id"],
@@ -111,7 +111,7 @@ export async function createServer() {
       {
         name: "update_jason_request",
         description:
-          "Update a Jason MCP inbox request status or reply. Intended for Jason/OpenClaw or an explicitly trusted local operator.",
+          "Update a OpenClaw Agent MCP inbox request status or reply. Intended for Jason/OpenClaw or an explicitly trusted local operator.",
         inputSchema: {
           type: "object",
           required: ["id"],
@@ -139,7 +139,7 @@ export async function createServer() {
       {
         name: "get_jason_bridge_status",
         description:
-          "Read migration health for the Jason MCP bridge: queue counts, recent request summaries, queue path, and the safety boundary. This is status only; it does not execute actions.",
+          "Read migration health for the OpenClaw Agent MCP bridge: queue counts, recent request summaries, queue path, and the safety boundary. This is status only; it does not execute actions.",
         inputSchema: {
           type: "object",
           properties: {}
@@ -147,7 +147,7 @@ export async function createServer() {
       },
       {
         name: "archive_jason_request",
-        description: "Archive a completed or rejected Jason MCP inbox request.",
+        description: "Archive a completed or rejected OpenClaw Agent MCP inbox request.",
         inputSchema: {
           type: "object",
           required: ["id"],
@@ -189,14 +189,14 @@ export async function createServer() {
     resources: [
       {
         uri: "jason://inbox",
-        name: "Jason MCP inbox",
+        name: "OpenClaw Agent MCP inbox",
         description: `File-backed Jason request inbox at ${queueDir()}`,
         mimeType: "application/json"
       },
       {
         uri: "jason://status",
-        name: "Jason MCP bridge status",
-        description: "Queue health, counts, and migration safety boundary for Jason MCP.",
+        name: "OpenClaw Agent MCP bridge status",
+        description: "Queue health, counts, and migration safety boundary for OpenClaw Agent MCP.",
         mimeType: "application/json"
       }
     ]

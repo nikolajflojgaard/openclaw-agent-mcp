@@ -7,7 +7,7 @@ Run:
 ```bash
 npm install
 npm run smoke
-node ./bin/jason-mcp.js
+node ./bin/openclaw-agent-mcp.js
 ```
 
 Then verify through mcporter:
@@ -25,13 +25,13 @@ Check:
 ```bash
 openclaw cron list --json
 npm run doctor
-jason-mcp-runner --dry-run --limit 5
+openclaw-agent-mcp-runner --dry-run --limit 5
 ```
 
 Manual drain:
 
 ```bash
-jason-mcp-runner --once --limit 1
+openclaw-agent-mcp-runner --once --limit 1
 ```
 
 ## Requests become `blocked`
@@ -69,7 +69,7 @@ mcporter call jason.archive_jason_request --args '{"id":"REQUEST_ID"}'
 
 ## New frontend starts submitting bad requests
 
-Disable that frontend's MCP connection first. The Jason MCP server can stay
+Disable that frontend's MCP connection first. The OpenClaw Agent MCP server can stay
 registered for other clients.
 
 Then archive or reject bad requests. Do not relax runner gates to make the

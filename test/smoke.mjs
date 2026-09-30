@@ -3,8 +3,8 @@ import { mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-const tempDir = await mkdtemp(path.join(os.tmpdir(), "jason-mcp-"));
-process.env.JASON_MCP_QUEUE_DIR = tempDir;
+const tempDir = await mkdtemp(path.join(os.tmpdir(), "openclaw-agent-mcp-"));
+process.env.OPENCLAW_AGENT_MCP_QUEUE_DIR = tempDir;
 
 const store = await import("../src/store.js");
 
@@ -88,7 +88,7 @@ assert.equal(
 
 const handoff = await import("../src/handoff.js");
 const packet = await handoff.buildHandoffPacket();
-assert.equal(packet.title, "Jason MCP migration handoff");
+assert.equal(packet.title, "OpenClaw Agent MCP migration handoff");
 assert.ok(packet.expectedTools.includes("get_jason_bridge_status"));
 assert.match(packet.boundary, /External clients ask/);
 

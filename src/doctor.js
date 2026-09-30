@@ -13,7 +13,7 @@ const EXPECTED_TOOLS = [
   "get_jason_bridge_status"
 ];
 
-const EXPECTED_CRON_KEY = "jason-mcp-inbox-runner";
+const EXPECTED_CRON_KEYS = ["openclaw-agent-mcp-inbox-runner", "jason-mcp-inbox-runner"];
 
 export async function runDoctorCli(argv = []) {
   const options = parseArgs(argv);
@@ -41,7 +41,7 @@ export async function runDoctor(options = {}) {
     repoRoot,
     queueDir: queueDir(),
     expectedTools: EXPECTED_TOOLS,
-    expectedCronKey: EXPECTED_CRON_KEY,
+    expectedCronKeys: EXPECTED_CRON_KEYS,
     checks
   };
 }
@@ -58,7 +58,7 @@ async function checkNode() {
 async function checkPackage(repoRoot) {
   try {
     const pkg = JSON.parse(await readFile(path.join(repoRoot, "package.json"), "utf8"));
-    const missingBins = ["jason-mcp", "jason-mcp-runner", "jason-mcp-doctor", "jason-mcp-handoff"].filter(
+    const missingBins = ["openclaw-agent-mcp", "openclaw-agent-mcp-runner", "openclaw-agent-mcp-doctor", "openclaw-agent-mcp-handoff"].filter(
       (name) => !pkg.bin?.[name]
     );
     const missingScripts = ["smoke", "doctor", "run-once", "handoff"].filter((name) => !pkg.scripts?.[name]);
@@ -106,7 +106,7 @@ async function checkGit(repoRoot) {
 async function checkGitHub(repoRoot) {
   const result = await runCommand(
     "gh",
-    ["repo", "view", "nikolajflojgaard/jason-mcp", "--json", "isPrivate,nameWithOwner,url"],
+    ["repo", "view", "nikolajflojgaard/openclaw-agent-mcp", "--json", "isPrivate,nameWithOwner,url"],
     { cwd: repoRoot, timeoutMs: 15000 }
   );
   if (result.code !== 0) return { name: "github", status: "warn", detail: trim(result.stderr || result.stdout) };
@@ -145,8 +145,8 @@ async function checkCron() {
   try {
     const parsed = JSON.parse(result.stdout);
     const jobs = Array.isArray(parsed) ? parsed : parsed.jobs || [];
-    const job = jobs.find((candidate) => candidate.declarationKey === EXPECTED_CRON_KEY);
-    if (!job) return { name: "cron", status: "fail", detail: `Missing ${EXPECTED_CRON_KEY}` };
+    const job = jobs.find((candidate) => EXPECTED_CRON_KEYS.includes(candidate.declarationKey));
+    if (!job) return { name: "cron", status: "fail", detail: `Missing one of ${EXPECTED_CRON_KEYS.join(", ")}` };
     const ok = job.enabled && ["ok", "idle", undefined, null].includes(job.status) && job.state?.consecutiveErrors === 0;
     return {
       name: "cron",
@@ -206,9 +206,9 @@ function parseArgs(argv) {
     if (arg === "--pretty") options.pretty = true;
     else if (arg === "--no-fail") options.noFail = true;
     else if (arg === "--help" || arg === "-h") {
-      console.log(`Usage: jason-mcp-doctor [--pretty] [--no-fail]
+      console.log(`Usage: openclaw-agent-mcp-doctor [--pretty] [--no-fail]
 
-Checks migration readiness for the Jason MCP bridge: package metadata, queue,
+Checks migration readiness for the OpenClaw Agent MCP bridge: package metadata, queue,
 Git/GitHub, mcporter registration, and the OpenClaw runner cron.`);
       process.exit(0);
     } else {
@@ -220,7 +220,7 @@ Git/GitHub, mcporter registration, and the OpenClaw runner cron.`);
 
 function formatReport(report) {
   const lines = [
-    `Jason MCP doctor: ${report.ok ? "OK" : "ATTENTION"}`,
+    `OpenClaw Agent MCP doctor: ${report.ok ? "OK" : "ATTENTION"}`,
     `repo: ${report.repoRoot}`,
     `queue: ${report.queueDir}`,
     ""

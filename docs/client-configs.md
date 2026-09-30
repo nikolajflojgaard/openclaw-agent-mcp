@@ -34,7 +34,7 @@ mcporter call jason.get_jason_bridge_status --args '{}'
 Use stdio transport:
 
 ```bash
-node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js
+node /path/to/openclaw-agent-mcp/bin/openclaw-agent-mcp.js
 ```
 
 Server name:
@@ -43,7 +43,7 @@ Server name:
 jason
 ```
 
-The client should treat Jason MCP as a request/reply bridge, not as a raw action
+The client should treat OpenClaw Agent MCP as a request/reply bridge, not as a raw action
 API.
 
 ## Grok Bot / Tesla front door

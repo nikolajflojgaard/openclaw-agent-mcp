@@ -1,4 +1,4 @@
-# Jason MCP Migration Runbook
+# OpenClaw Agent MCP Migration Runbook
 
 This repository is the safe handoff layer for moving Jason/OpenClaw behind a new
 frontend such as Grok Bot, Dots, Cursor, or another MCP-capable client.
@@ -7,7 +7,7 @@ The migration target is not "give the new client all local tools." The target is
 
 ```text
 New frontend
-  -> Jason MCP request bridge
+  -> OpenClaw Agent MCP request bridge
   -> guarded Jason/OpenClaw runner
   -> existing approved tools and workflows
   -> reply written back to MCP
@@ -28,12 +28,12 @@ mcporter list jason --schema --json
 The bridge is migration-ready when:
 
 - `npm run smoke` passes.
-- `npm run doctor` reports `Jason MCP doctor: OK`.
+- `npm run doctor` reports `OpenClaw Agent MCP doctor: OK`.
 - `npm run handoff` prints a complete migration packet with repo commit, stdio
   config, expected tools, runner state, queue counts, and safety boundary.
 - `mcporter list jason --schema --json` shows the `jason` server and the expected tools.
-- OpenClaw cron `jason-mcp-inbox-runner` is enabled and healthy.
-- GitHub repo `nikolajflojgaard/jason-mcp` is private.
+- OpenClaw cron `openclaw-agent-mcp-inbox-runner` is enabled and healthy.
+- GitHub repo `nikolajflojgaard/openclaw-agent-mcp` is public.
 
 ## Expected tools
 
@@ -108,7 +108,7 @@ npm run run-once
 Dry-run pending work:
 
 ```bash
-jason-mcp-runner --dry-run --limit 5
+openclaw-agent-mcp-runner --dry-run --limit 5
 ```
 
 Run the doctor:
@@ -129,9 +129,9 @@ npm run handoff -- --json
 If the new frontend behaves badly:
 
 1. Disable its MCP connection.
-2. Leave `jason-mcp-inbox-runner` running if the queue contains legitimate requests.
+2. Leave `openclaw-agent-mcp-inbox-runner` running if the queue contains legitimate requests.
 3. Archive bad requests with `archive_jason_request`.
 4. Use Telegram as the control channel until the frontend is fixed.
 
 If the runner itself is causing trouble, disable the OpenClaw cron
-`jason-mcp-inbox-runner`. Existing requests remain in the file-backed queue.
+`openclaw-agent-mcp-inbox-runner`. Existing requests remain in the file-backed queue.

@@ -13,6 +13,7 @@ const EXPECTED_TOOLS = [
   "archive_jason_request",
   "get_jason_bridge_status"
 ];
+const CRON_KEYS = ["openclaw-agent-mcp-inbox-runner", "jason-mcp-inbox-runner"];
 
 export async function runHandoffCli(argv = []) {
   const options = parseArgs(argv);
@@ -33,7 +34,7 @@ export async function buildHandoffPacket(options = {}) {
 
   return {
     generatedAt: new Date().toISOString(),
-    title: "Jason MCP migration handoff",
+    title: "OpenClaw Agent MCP migration handoff",
     repository: {
       localPath: repoRoot,
       remoteUrl: remoteUrl || "unknown",
@@ -44,9 +45,9 @@ export async function buildHandoffPacket(options = {}) {
     },
     stdioServer: {
       command: "node",
-      args: [path.join(repoRoot, "bin", "jason-mcp.js")],
+      args: [path.join(repoRoot, "bin", "openclaw-agent-mcp.js")],
       env: {
-        JASON_MCP_QUEUE_DIR: queueDir()
+        OPENCLAW_AGENT_MCP_QUEUE_DIR: queueDir()
       }
     },
     expectedTools: EXPECTED_TOOLS,
@@ -59,9 +60,9 @@ export async function buildHandoffPacket(options = {}) {
       warning: "A submitted request is not an executed action. Jason/OpenClaw classifies and gates the work."
     },
     runner: {
-      cronDeclarationKey: "jason-mcp-inbox-runner",
+      cronDeclarationKey: CRON_KEYS[0],
       cronStatus: cron,
-      manualCommand: `node ${path.join(repoRoot, "bin", "jason-mcp-runner.js")} --once --quiet-empty --limit 1`
+      manualCommand: `node ${path.join(repoRoot, "bin", "openclaw-agent-mcp-runner.js")} --once --quiet-empty --limit 1`
     },
     proof: {
       doctorOk: doctor.ok,
@@ -95,8 +96,8 @@ async function getCronStatus() {
   try {
     const parsed = JSON.parse(result.stdout);
     const jobs = Array.isArray(parsed) ? parsed : parsed.jobs || [];
-    const job = jobs.find((candidate) => candidate.declarationKey === "jason-mcp-inbox-runner");
-    if (!job) return { found: false, ok: false, detail: "Missing jason-mcp-inbox-runner" };
+    const job = jobs.find((candidate) => CRON_KEYS.includes(candidate.declarationKey));
+    if (!job) return { found: false, ok: false, detail: `Missing one of ${CRON_KEYS.join(", ")}` };
     return {
       found: true,
       ok: Boolean(job.enabled && job.status === "ok" && job.state?.consecutiveErrors === 0),
@@ -154,7 +155,7 @@ function parseArgs(argv) {
     if (arg === "--json") options.json = true;
     else if (arg === "--markdown") options.json = false;
     else if (arg === "--help" || arg === "-h") {
-      console.log(`Usage: jason-mcp-handoff [--json|--markdown]
+      console.log(`Usage: openclaw-agent-mcp-handoff [--json|--markdown]
 
 Generates a migration handoff packet for Grok, Dots, Cursor, or another MCP
 frontend that wants to use Jason/OpenClaw through the request bridge.`);
@@ -173,7 +174,7 @@ function formatMarkdown(packet) {
     .map((check) => `- ${check.status.toUpperCase()} ${check.name}: ${check.detail}`)
     .join("\n");
 
-  return `# Jason MCP Migration Handoff
+  return `# OpenClaw Agent MCP Migration Handoff
 
 Generated: ${packet.generatedAt}
 

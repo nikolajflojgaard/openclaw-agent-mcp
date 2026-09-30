@@ -3,10 +3,10 @@
     "jason": {
       "command": "node",
       "args": [
-        "/Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js"
+        "/path/to/openclaw-agent-mcp/bin/openclaw-agent-mcp.js"
       ],
       "env": {
-        "JASON_MCP_QUEUE_DIR": "/Users/nikolajflojgaard/.openclaw/workspace/state/jason-mcp"
+        "OPENCLAW_AGENT_MCP_QUEUE_DIR": "/path/to/openclaw-agent-mcp-state"
       }
     }
   }
