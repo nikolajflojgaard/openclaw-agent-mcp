@@ -114,8 +114,8 @@ async function checkGitHub(repoRoot) {
     const repo = JSON.parse(result.stdout);
     return {
       name: "github",
-      status: repo.isPrivate ? "ok" : "fail",
-      detail: `${repo.nameWithOwner} private=${repo.isPrivate} ${repo.url}`
+      status: repo.isPrivate ? "fail" : "ok",
+      detail: `${repo.nameWithOwner} public=${!repo.isPrivate} ${repo.url}`
     };
   } catch (error) {
     return { name: "github", status: "warn", detail: error.message };
