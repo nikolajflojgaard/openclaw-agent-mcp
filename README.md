@@ -117,6 +117,67 @@ Override with:
 JASON_MCP_QUEUE_DIR=/path/to/queue node ./bin/jason-mcp.js
 ```
 
+## Connect from ChatGPT
+
+ChatGPT cannot connect directly to a private local stdio MCP server. For
+ChatGPT, use OpenAI Secure MCP Tunnel instead of exposing this server with a
+random public tunnel.
+
+Local prerequisites:
+
+```bash
+brew install openai/tools/tunnel-client
+cd /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp
+npm install
+npm run doctor
+```
+
+Create or inspect the tunnel in OpenAI Platform:
+
+- Tunnels: <https://platform.openai.com/settings/organization/tunnels>
+- Runtime API keys: <https://platform.openai.com/settings/organization/api-keys>
+- ChatGPT connectors: <https://chatgpt.com/#settings/Connectors>
+
+You need:
+
+- `CONTROL_PLANE_TUNNEL_ID` from the tunnel settings.
+- `CONTROL_PLANE_API_KEY` from a runtime API key with tunnel read/use access.
+
+Then create a local tunnel-client profile:
+
+```bash
+export CONTROL_PLANE_API_KEY="<runtime-api-key>"
+
+tunnel-client init \
+  --sample sample_mcp_stdio_local \
+  --profile jason \
+  --tunnel-id "<tunnel-id>" \
+  --mcp-command "node /Users/nikolajflojgaard/.openclaw/workspace/jason-mcp/bin/jason-mcp.js"
+```
+
+Validate and run it:
+
+```bash
+tunnel-client doctor --profile jason --explain
+tunnel-client run --profile jason
+```
+
+Keep `tunnel-client run` alive while ChatGPT discovers or calls the connector.
+For a long-lived managed runtime, use `tunnel-client runtimes connect` and check
+the runtime status before treating it as live.
+
+After ChatGPT scans the connector, it should expose only these tools:
+
+- `submit_jason_request`
+- `list_jason_requests`
+- `read_jason_request`
+- `update_jason_request`
+- `archive_jason_request`
+- `get_jason_bridge_status`
+
+If ChatGPT sees direct shell, secret, Home Assistant write, GitHub write, Drive
+write, or publishing tools, disconnect it. That is not this safe request bridge.
+
 ## mcporter example
 
 ```bash
